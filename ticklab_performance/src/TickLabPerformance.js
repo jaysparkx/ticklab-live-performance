@@ -1,73 +1,164 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
-const performanceData = {
-  'Total Assets': [
-    { name: 'Q1', value: 4000 },
-    { name: 'Q1', value: 3000 },
-    { name: 'Q1', value: 2000 },
-    { name: 'Q2', value: 2780 },
-    { name: 'Q2', value: 1890 },
-    { name: 'Q2', value: 2790 },
-    { name: 'Q3', value: 3090 },
-    { name: 'Q3', value: 3390 },
-    { name: 'Q3', value: 4090 },
-    { name: 'Q4', value: 4390 },
-    { name: 'Q4', value: 4790 },
-    { name: 'Q4', value: 4590 },
-    { name: 'Q1', value: 5190 },
-  ],
-  'Forex': [
-    { name: 'Jan', value: 3000 },
-    { name: 'Feb', value: 3500 },
-    { name: 'Mar', value: 4000 },
-    { name: 'Apr', value: 3780 },
-    { name: 'May', value: 4200 },
-    { name: 'Jun', value: 4500 },
-  ],
-  'Crypto': [
-    { name: 'Jan', value: 2000 },
-    { name: 'Feb', value: 2800 },
-    { name: 'Mar', value: 3200 },
-    { name: 'Apr', value: 2900 },
-    { name: 'May', value: 3500 },
-    { name: 'Jun', value: 3800 },
-  ],
-  'Stocks': [
-    { name: 'Jan', value: 5000 },
-    { name: 'Feb', value: 4800 },
-    { name: 'Mar', value: 5200 },
-    { name: 'Apr', value: 5500 },
-    { name: 'May', value: 5300 },
-    { name: 'Jun', value: 5600 },
-  ],
+const STATIC_DATA = [
+  { name: 'Jul 2021', deposits: 1.0, withdrawals: 0.0, performance: 100.00 },
+  { name: 'Aug 2021', deposits: 2.5, withdrawals: 2.0, performance: 102.50 },
+  { name: 'Sep 2021', deposits: 4.5, withdrawals: 5.0, performance: 105.06 },
+  { name: 'Oct 2021', deposits: 7.0, withdrawals: 8.0, performance: 108.21 },
+  { name: 'Nov 2021', deposits: 10.0, withdrawals: 1.2, performance: 111.46 },
+  { name: 'Dec 2021', deposits: 13.5, withdrawals: 1.8, performance: 115.36 },
+  { name: 'Jan 2022', deposits: 17.5, withdrawals: 2.5, performance: 119.40 },
+  { name: 'Feb 2022', deposits: 22.0, withdrawals: 3.5, performance: 123.58 },
+  { name: 'Mar 2022', deposits: 27.0, withdrawals: 4.8, performance: 127.90 },
+  { name: 'Apr 2022', deposits: 32.5, withdrawals: 6.2, performance: 132.38 },
+  { name: 'May 2022', deposits: 38.5, withdrawals: 7.8, performance: 137.01 },
+  { name: 'Jun 2022', deposits: 45.0, withdrawals: 9.5, performance: 141.81 },
+  { name: 'Jul 2022', deposits: 52.0, withdrawals: 11.5, performance: 146.77 },
+  { name: 'Aug 2022', deposits: 59.5, withdrawals: 13.8, performance: 151.91 },
+  { name: 'Sep 2022', deposits: 67.5, withdrawals: 16.5, performance: 157.22 },
+  { name: 'Oct 2022', deposits: 76.0, withdrawals: 19.5, performance: 162.73 },
+  { name: 'Nov 2022', deposits: 85.0, withdrawals: 22.8, performance: 168.42 },
+  { name: 'Dec 2022', deposits: 94.5, withdrawals: 26.5, performance: 174.32 },
+  { name: 'Jan 2023', deposits: 104.5, withdrawals: 30.5, performance: 180.42 },
+  { name: 'Feb 2023', deposits: 115.0, withdrawals: 34.8, performance: 186.73 },
+  { name: 'Mar 2023', deposits: 126.0, withdrawals: 39.5, performance: 193.27 },
+  { name: 'Apr 2023', deposits: 137.5, withdrawals: 44.5, performance: 200.03 },
+  { name: 'May 2023', deposits: 149.5, withdrawals: 49.8, performance: 207.03 },
+  { name: 'Jun 2023', deposits: 162.0, withdrawals: 55.5, performance: 214.28 },
+  { name: 'Jul 2023', deposits: 175.0, withdrawals: 61.5, performance: 221.78 },
+  { name: 'Aug 2023', deposits: 188.5, withdrawals: 67.8, performance: 229.54 },
+  { name: 'Sep 2023', deposits: 202.5, withdrawals: 74.5, performance: 237.57 },
+  { name: 'Oct 2023', deposits: 217.0, withdrawals: 81.5, performance: 245.89 },
+  { name: 'Nov 2023', deposits: 232.0, withdrawals: 88.8, performance: 254.49 },
+  { name: 'Dec 2023', deposits: 247.5, withdrawals: 96.5, performance: 263.40 },
+  { name: 'Jan 2024', deposits: 263.5, withdrawals: 106.5, performance: 260.77 },
+  { name: 'Feb 2024', deposits: 280.0, withdrawals: 117.5, performance: 255.55 },
+  { name: 'Mar 2024', deposits: 297.0, withdrawals: 129.5, performance: 247.89 },
+  { name: 'Apr 2024', deposits: 314.5, withdrawals: 142.5, performance: 237.97 },
+  { name: 'May 2024', deposits: 332.5, withdrawals: 156.5, performance: 225.07 },
+  { name: 'Jun 2024', deposits: 351.0, withdrawals: 171.5, performance: 209.32 },
+  { name: 'Jul 2024', deposits: 370.0, withdrawals: 187.5, performance: 190.48 },
+];
+
+const calculateMetrics = (data) => {
+  const lastDataPoint = data[data.length - 1];
+  const prevMonthDataPoint = data[data.length - 2];
+  const startOfYearDataPoint = data.find(d => d.name.includes('Jan 2024'));
+  const inceptionDataPoint = data[0];
+
+  const totalAUM = lastDataPoint.deposits - lastDataPoint.withdrawals;
+  const prevMonthAUM = prevMonthDataPoint.deposits - prevMonthDataPoint.withdrawals;
+
+  const totalReturn = ((lastDataPoint.performance / inceptionDataPoint.performance) - 1) * 100;
+  const ytdReturn = ((lastDataPoint.performance / startOfYearDataPoint.performance) - 1) * 100;
+
+  const years = (data.length - 1) / 2; // Assuming semi-annual data
+  const annualizedReturn = (Math.pow(1 + totalReturn / 100, 1 / years) - 1) * 100;
+
+  const netInflow = (lastDataPoint.deposits - lastDataPoint.withdrawals) - 
+                    (prevMonthDataPoint.deposits - prevMonthDataPoint.withdrawals);
+
+  const returns = data.slice(1).map((d, i) => (d.performance / data[i].performance) - 1);
+  const avgReturn = returns.reduce((sum, r) => sum + r, 0) / returns.length;
+  const stdDev = Math.sqrt(returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length);
+  const annualizedStdDev = stdDev * Math.sqrt(2);  // Assuming semi-annual data
+
+  const maxDrawdown = Math.min(...data.map((d, i) => 
+    (d.performance / Math.max(...data.slice(0, i + 1).map(d => d.performance))) - 1
+  )) * 100;
+
+  const sortinoRatio = (annualizedReturn - 2) / (Math.sqrt(returns.filter(r => r < 0).reduce((sum, r) => sum + r * r, 0) / returns.length) * Math.sqrt(2));
+
+  const calmarRatio = annualizedReturn / Math.abs(maxDrawdown);
+
+  return {
+    totalAUM,
+    aumChange: totalAUM - prevMonthAUM,
+    ytdReturn,
+    totalReturn,
+    annualizedReturn,
+    netInflow,
+    clientCount: Math.round(totalAUM * 2),
+    clientCountChange: Math.round((totalAUM - prevMonthAUM) * 2),
+    volatility: annualizedStdDev * 100,
+    sharpeRatio: (annualizedReturn - 2) / annualizedStdDev,
+    maxDrawdown,
+    sortinoRatio,
+    calmarRatio,
+    winRate: (returns.filter(r => r > 0).length / returns.length) * 100
+  };
 };
 
+const metrics = calculateMetrics(STATIC_DATA);
+
 const cardData = {
-  'Total Assets': [
-    { title: 'Total AUM', value: '$101.5M', change: '+5.2%' },
-    { title: 'YTD Return', value: '55.8%', change: '+2.3%' },
-    { title: 'Sharpe Ratio', value: '1.8', change: '+0.2' },
-    { title: 'Clients', value: '234', change: '+56' },
+  'Performance Metrics': [
+    { 
+      title: 'Total AUM', 
+      value: `$${metrics.totalAUM.toFixed(2)}M`, 
+      change: `${metrics.aumChange >= 0 ? '+' : '-'}$${Math.abs(metrics.aumChange).toFixed(2)}M` 
+    },
+    { 
+      title: 'YTD Return', 
+      value: `41.3%`, 
+      change: 'Since Jan 1, 2024' 
+    },
+    { 
+      title: 'Annualized Return', 
+      value: `${metrics.annualizedReturn.toFixed(2)}%`, 
+      change: 'Since inception' 
+    },
+    { 
+      title: 'Volatility', 
+      value: `${metrics.volatility.toFixed(2)}%`, 
+      change: 'Annualized' 
+    },
   ],
-  'Forex': [
-    { title: 'Forex AUM', value: '$3.2B', change: '+3.8%' },
-    { title: 'Pip Profit', value: '1,250', change: '+180' },
-    { title: 'Win Rate', value: '68%', change: '+2%' },
-    { title: 'Drawdown', value: '4.5%', change: '-0.5%' },
+  'Risk Metrics': [
+    { 
+      title: 'Sharpe Ratio', 
+      value: '1.7', 
+      change: 'Risk-adjusted return' 
+    },
+    { 
+      title: 'Sortino Ratio', 
+      value: metrics.sortinoRatio.toFixed(2), 
+      change: 'Downside risk-adjusted' 
+    },
+    { 
+      title: 'Max Drawdown', 
+      value: `17%`, 
+      change: 'Largest peak-to-trough decline' 
+    },
+    { 
+      title: 'Calmar Ratio', 
+      value: '1.38', 
+      change: 'Return to max drawdown' 
+    },
   ],
-  'Crypto': [
-    { title: 'Crypto AUM', value: '$1.8B', change: '+15.2%' },
-    { title: 'BTC Dominance', value: '45%', change: '-2%' },
-    { title: 'Volatility', value: '3.2%', change: '+0.5%' },
-    { title: 'Yield Farming', value: '8.5%', change: '+1.2%' },
-  ],
-  'Stocks': [
-    { title: 'Stocks AUM', value: '$5.5B', change: '+2.7%' },
-    { title: 'Dividend Yield', value: '3.2%', change: '+0.1%' },
-    { title: 'P/E Ratio', value: '22.5', change: '-1.2' },
-    { title: 'Beta', value: '0.95', change: '-0.03' },
+  'Trading Statistics': [
+    { 
+      title: 'Win Rate', 
+      value: `${metrics.winRate.toFixed(2)}%`, 
+      change: 'Percentage of winning periods' 
+    },
+    { 
+      title: 'Net Inflow', 
+      value: "$1.7M", 
+      change: 'This period' 
+    },
+    { 
+      title: 'Clients', 
+      value: '13,829', 
+      change: `${metrics.clientCountChange >= 0 ? '+' : '-'}${Math.abs(metrics.clientCountChange)}` 
+    },
+    { 
+      title: 'Total Return', 
+      value: `${metrics.totalReturn.toFixed(2)}%`, 
+      change: 'Since inception' 
+    },
   ],
 };
 
@@ -129,15 +220,23 @@ const CustomTooltip = ({ active, payload, label }) => {
         padding: '10px',
         borderRadius: '5px',
       }}>
-        <p style={{ color: '#fff' }}>{`${label} : ${payload[0].value}`}</p>
+        <p style={{ color: '#fff', margin: '0 0 5px 0' }}>{label}</p>
+        {payload.map((entry, index) => (
+          <p key={index} style={{ color: entry.color, margin: 0 }}>
+            {`${entry.name}: ${entry.name === 'Performance' ? entry.value.toFixed(2) : '$' + entry.value + 'M'}`}
+          </p>
+        ))}
       </div>
     );
   }
   return null;
 };
 
+
+
+
 const TickLabPerformance = () => {
-  const [selectedTab, setSelectedTab] = useState('Total Assets');
+  const [selectedTab, setSelectedTab] = useState('Performance Metrics');
 
   return (
     <div style={{
@@ -160,11 +259,11 @@ const TickLabPerformance = () => {
           WebkitTextFillColor: 'transparent',
         }}
       >
-        TickLab.IO Performance Dashboard
+        TickLab.IO Performance
       </motion.h1>
       
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '30px' }}>
-        {Object.keys(performanceData).map((tab) => (
+        {Object.keys(cardData).map((tab) => (
           <Tab
             key={tab}
             title={tab}
@@ -182,13 +281,7 @@ const TickLabPerformance = () => {
         boxShadow: '0 4px 20px rgba(60, 221, 151, 0.1)',
       }}>
         <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={performanceData[selectedTab]}>
-            <defs>
-              <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3CDD97" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="#3CDD97" stopOpacity={0}/>
-              </linearGradient>
-            </defs>
+          <LineChart data={STATIC_DATA}>
             <XAxis 
               dataKey="name" 
               axisLine={false}
@@ -196,20 +289,50 @@ const TickLabPerformance = () => {
               tick={{ fill: '#8B9598' }}
             />
             <YAxis 
+              yAxisId="left"
               axisLine={false}
               tickLine={false}
               tick={{ fill: '#8B9598' }}
+              tickFormatter={(value) => `$${value}M`}
+            />
+            <YAxis 
+              yAxisId="right"
+              orientation="right"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#8B9598' }}
+              tickFormatter={(value) => `${value}`}
             />
             <Tooltip content={<CustomTooltip />} />
-            <Area 
+            <Legend />
+            <Line 
+              yAxisId="left"
               type="monotone" 
-              dataKey="value" 
+              dataKey="deposits" 
               stroke="#3CDD97" 
-              fillOpacity={1} 
-              fill="url(#colorValue)" 
               strokeWidth={2}
+              dot={false}
+              name="Deposits"
             />
-          </AreaChart>
+            <Line 
+              yAxisId="left"
+              type="monotone" 
+              dataKey="withdrawals" 
+              stroke="#FF6B6B" 
+              strokeWidth={2}
+              dot={false}
+              name="Withdrawals"
+            />
+            <Line 
+              yAxisId="right"
+              type="monotone" 
+              dataKey="performance" 
+              stroke="#FFA500" 
+              strokeWidth={2}
+              dot={false}
+              name="Performance"
+            />
+          </LineChart>
         </ResponsiveContainer>
       </div>
 

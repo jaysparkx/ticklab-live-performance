@@ -1,8 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
-const Card = ({ title, description, index, onClick }) => (
-  <div 
+const Card = ({ title, description, index, onClick, isBlurred }) => (
+  <motion.div
     style={{
       backgroundColor: '#111111',
       borderRadius: '15px',
@@ -10,19 +11,15 @@ const Card = ({ title, description, index, onClick }) => (
       position: 'relative',
       overflow: 'hidden',
       boxShadow: '0 10px 20px rgba(0,0,0,0.2), 0 6px 6px rgba(0,0,0,0.1)',
-      transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
-      cursor: 'pointer',
+      cursor: isBlurred ? 'not-allowed' : 'pointer',
+      filter: isBlurred ? 'blur(5px)' : 'none',
+      opacity: isBlurred ? 0.7 : 1,
+      pointerEvents: isBlurred ? 'none' : 'auto',
       backgroundImage: 'linear-gradient(145deg, rgba(60, 221, 151, 0.1) 0%, rgba(17, 17, 17, 0) 100%)',
     }}
     onClick={onClick}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.transform = 'translateY(-5px)';
-      e.currentTarget.style.boxShadow = '0 15px 30px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.15)';
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.transform = 'translateY(0)';
-      e.currentTarget.style.boxShadow = '0 10px 20px rgba(0,0,0,0.2), 0 6px 6px rgba(0,0,0,0.1)';
-    }}
+    whileHover={isBlurred ? {} : { y: -5, boxShadow: '0 15px 30px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.15)' }}
+    transition={{ duration: 0.3 }}
   >
     <div style={{
       position: 'absolute',
@@ -73,9 +70,9 @@ const Card = ({ title, description, index, onClick }) => (
       fontWeight: '600',
       zIndex: '1',
     }}>
-      Explore
+      {isBlurred ? 'Locked' : 'Explore'}
     </div>
-  </div>
+  </motion.div>
 );
 
 const CardPage = () => {
@@ -87,13 +84,27 @@ const CardPage = () => {
       description: 'Elevate your productivity with our cutting-edge solutions designed for the discerning professional.',
       onClick: () => navigate('/ticklab-performance')
     },
-    { title: 'E.D.I.T.H', description: 'Experience flawless harmony as our premium features blend seamlessly into your existing workflow.' },
-    { title: 'Ai Agent', description: 'Gain unparalleled control with our Ai Agent that will help TickLab.IO to sky rocket, crafted for your unique needs.' },
-    { title: 'Workers', description: 'Be Tick-Engineer and build algo will help you to get fund to manage it.' },
-    { title: 'Evaluation', description: 'Evaluate your progress and move to a real fund.' },
-    { title: 'API Integration', description: 'Seamlessly connect and enhance your systems with our robust API solutions.' },
+    { 
+      title: 'E.D.I.T.H', 
+      description: "'Even Dead, I'm The Hero: Our AI-powered trading assistant that seamlessly integrates with your strategies.'"
+    },
+    { 
+      title: 'AI Agent (Coming Soon)', 
+      description: "'Harness unparalleled control with our AI Agent, designed to propel TickLab.IO's performance to new heights.'"
+    },
+    { 
+      title: 'Workers (Coming Soon)', 
+      description: 'Become a Quant-Engineer: Build algorithms that attract funding and showcase your trading prowess.'
+    },
+    { 
+      title: 'Evaluation (Coming Soon)', 
+      description: 'Track your progress, prove your skills, and transition to managing real funds with our comprehensive evaluation system.'
+    },
+    { 
+      title: 'API Integration (Coming Soon)', 
+      description: 'Enhance your trading ecosystem with our robust API solutions, enabling seamless connectivity and automation.'
+    },
   ];
-
   return (
     <div style={{ 
       padding: '60px 40px', 
@@ -122,7 +133,14 @@ const CardPage = () => {
         margin: '0 auto',
       }}>
         {cardData.map((card, index) => (
-          <Card key={index} title={card.title} description={card.description} index={index} onClick={card.onClick} />
+          <Card 
+            key={index} 
+            title={card.title} 
+            description={card.description} 
+            index={index} 
+            onClick={card.onClick}
+            isBlurred={card.title !== 'Elite Performance'}
+          />
         ))}
       </div>
     </div>

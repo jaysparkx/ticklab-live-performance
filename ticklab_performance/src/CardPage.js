@@ -85,6 +85,11 @@ const CardPage = () => {
       onClick: () => navigate('/ticklab-performance')
     },
     { 
+      title: "Client's Access", 
+      description: 'Secure portal for clients to view personalized performance metrics and account details.',
+      onClick: () => navigate('/client-access')
+    },
+    { 
       title: 'E.D.I.T.H', 
       description: "'Even Dead, I'm The Hero: Our AI-powered trading assistant that seamlessly integrates with your strategies.'"
     },
@@ -139,8 +144,8 @@ const CardPage = () => {
             description={card.description} 
             index={index} 
             onClick={card.onClick}
-            isBlurred={card.title !== 'Elite Performance'}
-          />
+            isBlurred={card.title !== 'Elite Performance' && card.title !== "Client's Access"}
+            />
         ))}
       </div>
     </div>
